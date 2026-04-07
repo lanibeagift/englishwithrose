@@ -858,7 +858,7 @@ function renderLessonFlashcard() {
         <div class="fc-stat review">🔄 <span id="lfc-stat-review">0</span> Ôn tập</div>
       </div>
     </div>
-    <div class="fc-body" id="lfc-body" style="padding-top:12px"></div>`;
+    <div id="lfc-body" style="display:flex;flex-direction:column;align-items:center;padding:12px 0 24px;width:100%"></div>`;
 
   renderLFCCard();
 }
@@ -1138,6 +1138,12 @@ function renderLFCType(body) {
     <div class="fc-card-wrap" style="min-height:auto">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;display:flex;flex-direction:column;align-items:center;gap:14px">
         <div class="fc-type-meaning">${card.meaning}</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="fc-play-btn" onclick="speak('${card.word.replace(/'/g,'\\'')}')" title="Nghe phát âm">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <span class="fc-ipa">${card.ipa}</span>
+        </div>
         <input class="fc-type-input" id="lfc-type-inp" placeholder="Gõ từ tiếng Anh..." autocomplete="off"
           onkeydown="if(event.key==='Enter')checkLFCType()">
         <div style="display:flex;gap:10px">
@@ -1149,7 +1155,7 @@ function renderLFCType(body) {
       </div>
     </div>
     <div class="fc-progress" style="margin-top:12px">${FC.index+1} / ${FC.cards.length} từ · Enter để kiểm tra</div>`;
-  setTimeout(()=>{const i=document.getElementById('lfc-type-inp');if(i)i.focus();},80);
+  setTimeout(()=>{ speak(card.word); const i=document.getElementById('lfc-type-inp'); if(i) setTimeout(()=>i.focus(),400); },80);
 
   document._lfcKey && document.removeEventListener('keydown', document._lfcKey);
   document._lfcKey = null;

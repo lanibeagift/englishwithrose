@@ -2380,6 +2380,53 @@ function renderFCPronounce(body) {
     <div class="fc-progress" style="margin-top:16px">${FC.index+1} / ${FC.cards.length}</div>`;
   setTimeout(()=>speak(card.word), 300);
 }
+// ---- ANSWER FCQ (standalone flashcard hub - quiz mode) ----
+function answerFCQ(btn, chosen, correct, word, example) {
+  if(FC.qAnswered) return;
+  FC.qAnswered = true;
+  document.querySelectorAll('#fc-body .fcq-opt').forEach(b=>b.onclick=null);
+  const fb = document.getElementById('fcq-fb');
+  fb.style.display = 'block';
+  if(chosen===correct){
+    btn.classList.add('correct');
+    fb.className = 'fcq-feedback ok';
+    fb.innerHTML = `✓ Chính xác! <em>"${example}"</em>`;
+    FC.mastered.add(FC.index);
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('#fc-body .fcq-opt').forEach(b=>{
+      if(b.textContent.trim()===correct) b.classList.add('correct');
+    });
+    fb.className = 'fcq-feedback no';
+    fb.innerHTML = `✗ Đáp án đúng: <strong>${correct}</strong>`;
+    FC.review.add(FC.index);
+  }
+  updateFCStats();
+  document.getElementById('fc-next-btn').style.display = 'block';
+}
+
+// ---- CHECK FC TYPE (standalone flashcard hub - type mode) ----
+function checkFCType() {
+  if(FC.qAnswered) return;
+  const card = FC.cards[FC.index];
+  const inp = document.getElementById('fc-type-inp');
+  if(!inp) return;
+  const val = inp.value.trim().toLowerCase().replace(/[^\w\s]/g,'');
+  const ans = card.word.toLowerCase().replace(/[^\w\s]/g,'').replace(/\[.*?\]/g,'').trim();
+  FC.qAnswered = true;
+  const fb = document.getElementById('fc-type-fb');
+  fb.style.display = 'block';
+  if(val===ans){
+    inp.classList.add('ok'); fb.style.color='var(--accent3)'; fb.textContent='✓ Chính xác!';
+    FC.mastered.add(FC.index);
+  } else {
+    inp.classList.add('no'); fb.style.color='var(--accent2)'; fb.textContent=`✗ Đáp án: ${card.word}`;
+    FC.review.add(FC.index);
+  }
+  updateFCStats();
+  document.getElementById('fc-next-btn').style.display = 'block';
+}
+
 // ---- FINISH ----
 function renderFCFinish() {
   const total = FC.cards.length;
@@ -2419,4 +2466,4 @@ renderDashboard();
 renderFCHub();
 </script>
 </body>
-</html>   Kiểm tra xem vì sao lại báo lỗi ko vào được web
+</html>
